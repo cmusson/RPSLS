@@ -10,6 +10,7 @@ declare global {
 
 export const EthereumProvider = ({ children }: { children: ReactNode }) => {
   const [signer, setSigner] = useState<ethers.Signer | null>(null);
+  const [connected, setConnected] = useState(false);
 
   useEffect(() => {
     const initEthereum = async () => {
@@ -28,7 +29,7 @@ export const EthereumProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   return (
-    <EthereumContext.Provider value={{ signer }}>
+    <EthereumContext.Provider value={{ signer, connected, setConnected }}>
       {children}
     </EthereumContext.Provider>
   );

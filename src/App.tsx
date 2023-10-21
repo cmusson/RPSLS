@@ -1,10 +1,8 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useEthereum } from "./context/EthereumContext";
 
 export default function App() {
-  const { signer } = useEthereum();
-  // add useState connected and setConnected to Ethereum global context
-  const [connected, setConnected] = useState(false);
+  const { signer, connected, setConnected } = useEthereum();
 
   const connectWallet = async () => {
     if (!signer) {
