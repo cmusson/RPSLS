@@ -2,18 +2,17 @@ import { useEffect } from "react";
 import { useEthereum } from "./context/EthereumContext";
 
 export default function App() {
-  const { signer, connected, setConnected } = useEthereum();
+  const { connected, setConnected } = useEthereum();
 
   const connectWallet = async () => {
-    if (!signer) {
+    if (!window.ethereum) {
       console.log("No wallet available. You need to install MetaMask!");
       return;
     }
+
     try {
-      //disable the 'Connect Wallet' button while the request is pending!
-      await (window as Window).ethereum.request({
-        method: "eth_requestAccounts",
-      });
+      // Request accounts access
+      await window.ethereum.request({ method: "eth_requestAccounts" });
       setConnected(true);
     } catch (error) {
       console.error(error);
@@ -23,10 +22,10 @@ export default function App() {
 
   useEffect(() => {
     const checkIfWalletIsConnected = async () => {
-      if (!signer) return;
+      if (!window.ethereum) return;
+
       try {
-        // Get accounts
-        const accounts = await (window as Window).ethereum.request({
+        const accounts = await window.ethereum.request({
           method: "eth_accounts",
         });
         if (accounts.length > 0) {
@@ -36,8 +35,9 @@ export default function App() {
         console.error(error);
       }
     };
+
     checkIfWalletIsConnected();
-  }, [signer]);
+  }, []);
 
   return (
     <main className="flex flex-col items-center justify-center w-screen h-screen">
@@ -45,16 +45,14 @@ export default function App() {
         Rock Paper Scissors Lizard Spock
       </h1>
       {connected ? (
-        <></>
+        <span>Wallet Connected!</span>
       ) : (
-        <button onClick={connectWallet} disabled={connected}>
-          Connect Wallet
-        </button>
+        <button onClick={connectWallet}>Connect Wallet</button>
       )}
       <h3>
         {connected
-          ? "Wallet Connected!"
-          : "Press button to connect your wallet"}
+          ? "You can start playing now!"
+          : "Connect your wallet to start playing"}
       </h3>
     </main>
   );
