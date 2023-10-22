@@ -1,27 +1,21 @@
 import { ethers } from "hardhat";
 
 async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const unlockTime = currentTimestampInSeconds + 60;
+  const j2Address: string = process.argv[2]; // 2nd players address
+  const c1Hash: string = process.argv[3]; // first players move
 
-  const lockedAmount = ethers.parseEther("0.001");
+  // Get the contract to deploy
+  const RPS = await ethers.getContractFactory("RPS");
+  const rps = await RPS.deploy(c1Hash, j2Address);
 
-  const lock = await ethers.deployContract("Lock", [unlockTime], {
-    value: lockedAmount,
-  });
+  await rps.deployed();
 
-  await lock.waitForDeployment();
-
-  console.log(
-    `Lock with ${ethers.formatEther(
-      lockedAmount
-    )}ETH and unlock timestamp ${unlockTime} deployed to ${lock.target}`
-  );
+  console.log("RPS deployed to:", rps.address);
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+main()
+  .then(() => process.exit(0))
+  .catch((error: error) => {
+    console.error("Error:", error);
+    process.exit(1);
+  });
